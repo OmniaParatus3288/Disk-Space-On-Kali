@@ -1,153 +1,80 @@
-# Disk-Space-On-Kali
-
-Free Up Disk Space on Kali Linux
-Enable Remote Docker API from Windows Host
+# 🧹 Kali Disk Cleanup & Remote Docker Access  
+Free space like a pro, then steer Docker on your Windows host—all from your Kali box.
 
 ---
 
-## Freeing Up Disk Space on Kali
+## 🔖 Repo‑name ideas  
+* `kali-disk-cleanup-docker`  
+* `kali-space-saver-remote-docker`  
+* `daph-kali-tidy-lab`  
+* `free-up-kali-disk`  
 
-### 1. Check Disk Usage
-
-**Show disk usage:**
-
-```bash
-df -h
-```
-
-**Find which folders use the most space:**
-
-```bash
-du -h --max-depth=1 / | sort -hr | head -20
-```
+*(pick the kebab‑case label that fits your portfolio style)*
 
 ---
 
-### 2. Remove Unused Packages
-
-**Clean up package leftovers:**
-
-```bash
-sudo apt autoremove -y  
-sudo apt autoclean -y  
-sudo apt clean -y
-```
-
-**Find large packages:**
-
-```bash
-dpkg-query -Wf '${Installed-Size;10}\t${Package}\n' | sort -rn | head -20
-```
-
-**Remove anything you don’t need:**
-
-```bash
-sudo apt remove --purge package-name -y
-```
-
-Replace `package-name` with the actual name.
+## 🙋‍♀️ About Me (blurb for README header)  
+*“I automate the un‑fun bits—cleaning disks, wiring APIs—so I can spend more time hacking and less time hunting gigabytes.”*
 
 ---
 
-### 3. Clear System Logs
-
-**Shrink journal logs to 100MB:**
-
-```bash
-sudo journalctl --vacuum-size=100M
-```
-
-**Delete old logs:**
-
-```bash
-sudo rm -rf /var/log/*.log /var/log/*/*.log
-```
+## 🗂️ Contents  
+| Section | What you get |
+|---------|--------------|
+| **Disk Cleanup Cheatsheet** | One‑liners to reclaim GBs fast |
+| **Docker Remote API How‑To** | Point Kali’s CLI at Docker Desktop on Windows |
+| **Safety Tips** | Avoid nuking the wrong files |
+| **Next Steps** | Ideas to script, monitor, and automate |
 
 ---
 
-### 4. Clear APT Cache
+## 🧼 Freeing Up Disk Space on Kali
 
-**Remove all cached packages:**
+| Step | Command(s) | Why |
+|------|------------|-----|
+| **1. Check usage** | `df -h`<br>`du -h --max-depth=1 / | sort -hr | head -20` | Spot the space hogs |
+| **2. Purge orphan pkgs** | `sudo apt autoremove -y`<br>`sudo apt autoclean -y`<br>`sudo apt clean -y` | Yank leftovers & cache |
+| **3. Nuke large pkgs** | `dpkg-query -Wf '${Installed-Size;10}\t${Package}\n' \| sort -rn \| head -20`<br>`sudo apt remove --purge <package>` | Remove heavy, unused apps |
+| **4. Trim logs** | `sudo journalctl --vacuum-size=100M`<br>`sudo rm -rf /var/log/*.log /var/log/*/*.log` | Logs grow fast—cap or clear |
+| **5. Clear APT cache** | `sudo apt clean`<br>`du -sh /var/cache/apt` | Cache ≠ permanent storage |
+| **6. Hunt giant files** | `sudo find / -type f -size +500M -exec ls -lh {} +`<br>`sudo rm -rf /path/to/file` | Delete ISO duplicates, etc. |
+| **7. Remove old kernels (⚠ advanced)** | `dpkg --list \| grep linux-image`<br>`sudo apt remove --purge linux-image-X.X.X-X-generic` | Keep the newest only |
+| **8. Docker detox** | `docker system prune -a` | Containers & images eat GBs |
 
-```bash
-sudo apt clean
-```
-
-**Check cache size:**
-
-```bash
-du -sh /var/cache/apt
-```
-
----
-
-### 5. Remove Large Files
-
-**Search for files over 500MB:**
-
-```bash
-sudo find / -type f -size +500M -exec ls -lh {} +
-```
-
-**Delete files you don’t need:**
-
-```bash
-sudo rm -rf /path/to/file
-```
+> **Pro tip:** log every deletion in `cleanup-log.md`—future you will thank you.
 
 ---
 
-### 6. Remove Old Kernels (Advanced)
+## 🐳 Enable Remote Docker API (Windows → Kali)
 
-**List installed kernels:**
+1. **On Windows (Docker Desktop)**  
+   * Settings ▸ **General** ▸ ✔ *Expose daemon on tcp://localhost:2375*  
+   * Apply & Restart
 
-```bash
-dpkg --list | grep linux-image
-```
+2. **On Kali**  
+   ```bash
+   windows_ip="<WinHost_IP>"
+   docker -H tcp://$windows_ip:2375 info
+   ```
+   You should see Docker info from the Windows engine.
 
-**Remove older versions:**
-
-```bash
-sudo apt remove --purge linux-image-X.X.X-X-generic
-```
-
-Keep the latest one only.
-
----
-
-### 7. Clean Docker
-
-If you use Docker:
-
-```bash
-docker system prune -a
-```
-
-*Are you checking space often, or just when things break?*
+3. **Firewall notes**  
+   *2375 is plaintext—use it only on trusted lab nets or wrap it in an SSH tunnel.*
 
 ---
 
-## Enable Remote Docker API on Windows 10
+## 🔒 Safety tips
 
-Access Docker on your Windows host from Kali over the network.
-
-### 1. Change Docker Settings
-
-* Open Docker Desktop on Windows
-* Go to **Settings**
-* Under **General**, check:
-  `Expose daemon on tcp://localhost:2375 without TLS`
-* Apply and restart Docker
-
-Now your Kali machine can talk to Docker on Windows.
+* **Double‑check paths** before any `rm -rf`.  
+* Keep **one known‑good snapshot** of the VM before major purges.  
+* Test the Docker API from a **non‑privileged user** first.
 
 ---
 
-**Want to test it?**
-From Kali, run:
+## ➡️ Next steps
 
-```bash
-docker -H tcp://<windows_ip>:2375 info
-```
+* Script all cleanup commands into `cleanup.sh`; schedule via `cron`.  
+* Add **Prometheus + Grafana** to graph disk usage over time.  
+* Secure Docker API with **TLS or an SSH tunnel** for real deployments.  
 
-Replace `<windows_ip>` with your actual host IP.
+Happy tidying—may your disks stay slim and your exploits stay sharp! 🗡️
