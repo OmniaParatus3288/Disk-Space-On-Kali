@@ -3,16 +3,6 @@ Free space like a pro, then steer Docker on your Windows host—all from your Ka
 
 ---
 
-## 🔖 Repo‑name ideas  
-* `kali-disk-cleanup-docker`  
-* `kali-space-saver-remote-docker`  
-* `daph-kali-tidy-lab`  
-* `free-up-kali-disk`  
-
-*(pick the kebab‑case label that fits your portfolio style)*
-
----
-
 ## 🙋‍♀️ About Me (blurb for README header)  
 *“I automate the un‑fun bits—cleaning disks, wiring APIs—so I can spend more time hacking and less time hunting gigabytes.”*
 
